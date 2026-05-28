@@ -6,9 +6,35 @@ import zlib
 width, height = 256, 256
 image = np.zeros((height, width, 3), dtype=np.uint8)
 
-for y in range(height):
-    for x in range(width):
-        image[y, x] = [int((x / 255) * 255), int((y / 255) * 255), 128]
+for x in range(width):
+    t = (x / (width - 1)) * 7
+    segment = int(t)
+
+    if segment >= 7:
+        segment = 6
+
+    f = t - segment
+
+    v_up = int(255 * f)
+    v_down = int(255 * (1 - f))
+
+    if segment == 0:
+        r, g, b = 0, 0, v_up
+    elif segment == 1:
+        r, g, b = 0, v_up, 255
+    elif segment == 2:
+        r, g, b = 0, 255, v_down
+    elif segment == 3:
+        r, g, b = v_up, 255, 0
+    elif segment == 4:
+        r, g, b = 255, v_down, 0
+    elif segment == 5:
+        r, g, b = 255, 0, v_up
+    elif segment == 6:
+        r, g, b = 255, v_up, 255
+
+    for y in range(height):
+        image[y, x] = [r, g, b]
 
 png_file_signature = b'\x89PNG\r\n\x1a\n'
 
