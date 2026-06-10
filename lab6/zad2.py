@@ -196,8 +196,10 @@ class RayTracer:
         return (closest, min_distance, min_cross_point)
 
 
+# rekurencyjny tracer - kolor lokalny + kolor z odbicia
 class MyRayTracer(RayTracer):
     def _get_pixel_color(self, ray, depth=3):
+        # depth ogranicza liczbe odbic, inaczej leciloby w nieskonczonosc
         if depth == 0:
             return np.array([0.0, 0.0, 0.0])
 
@@ -208,12 +210,14 @@ class MyRayTracer(RayTracer):
 
         local_color = obj.get_color(cross_point, ray.direction, self.scene)
 
+        # promien odbity, przesuwam start o epsilon zeby nie trafic w siebie
         normal = obj.get_normal(cross_point)
         reflection_vector = normalize(reflect(ray.direction, normal))
 
         reflection_ray = Ray(cross_point + reflection_vector * EPSILON, reflection_vector)
         reflected_color = self._get_pixel_color(reflection_ray, depth - 1)
 
+        # wagi dobrane na oko
         w_local = 0.7
         w_reflect = 0.3
 

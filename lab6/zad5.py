@@ -121,6 +121,7 @@ class Sphere(SceneObject):
         return cross_point, r1
 
 
+# plaszczyzna jako obiekt inny niz kula, dziedziczy po SceneObject
 class Plane(SceneObject):
     def __init__(
         self,
@@ -141,10 +142,12 @@ class Plane(SceneObject):
         return self.normal
 
     def trace(self, ray):
+        # promien rownolegly do plaszczyzny jej nie przetnie
         denom = np.dot(self.normal, ray.direction)
         if abs(denom) < EPSILON:
             return (None, None)
 
+        # punkt przeciecia promienia z plaszczyzna
         t = np.dot(self.point - ray.starting_point, self.normal) / denom
         if t < EPSILON:
             return (None, None)

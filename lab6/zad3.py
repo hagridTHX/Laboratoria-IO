@@ -220,6 +220,7 @@ class MyRayTracer(RayTracer):
         return w_local * local_color + w_reflect * reflected_color
 
 
+# sfera z obsluga cienia
 class MySphere(Sphere):
     def get_color(self, cross_point, obs_vector, scene):
         color = self.ambient * scene.ambient
@@ -228,6 +229,7 @@ class MySphere(Sphere):
         normal = self.get_normal(cross_point)
         light_vector = normalize(light.position - cross_point)
 
+        # puszczam promien w strone swiatla i sprawdzam czy cos go zaslania
         shadow_ray = Ray(cross_point + light_vector * EPSILON, light_vector)
         distance_to_light = np.linalg.norm(light.position - cross_point)
 
@@ -246,6 +248,7 @@ class MySphere(Sphere):
 
         if n_dot_l > 0:
             color += self.ambient * light.ambient
+            # Phonga liczymy tylko jak punkt nie jest w cieniu
             if not in_shadow:
                 color += (self.diffuse * light.diffuse * n_dot_l) + (
                     self.specular * light.specular * v_dot_r**self.shining

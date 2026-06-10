@@ -12,6 +12,7 @@ def reflect(vector, normal_vector):
     return vector - normal_vector * (2 * n_dot_l)
 
 
+# zalamanie promienia wg prawa Snella, None gdy calkowite wewnetrzne odbicie
 def refract(vector, normal_vector, eta_ratio):
     cos_theta = min(-np.dot(vector, normal_vector), 1.0)
     r_out_perp = eta_ratio * (vector + cos_theta * normal_vector)
@@ -217,6 +218,7 @@ class RayTracer:
         return (closest, min_distance, min_cross_point)
 
 
+# tracer z odbiciem i przezroczystoscia
 class MyRayTracer2(RayTracer):
     def _get_pixel_color(self, ray, depth=3):
         if depth == 0:
@@ -228,16 +230,19 @@ class MyRayTracer2(RayTracer):
 
         local_color = obj.get_color(cross_point, ray.direction, self.scene)
 
+        # sprawdzam czy wchodzimy do obiektu czy z niego wychodzimy
         unit_dir = normalize(ray.direction)
         normal = obj.get_normal(cross_point)
         front_face = np.dot(unit_dir, normal) < 0
         if not front_face:
             normal = -normal
 
+        # promien odbity
         reflection_vector = normalize(reflect(unit_dir, normal))
         reflection_ray = Ray(cross_point + reflection_vector * EPSILON, reflection_vector)
         reflected_color = self._get_pixel_color(reflection_ray, depth - 1)
 
+        # promien zalamany, stosunek wspolczynnikow zalezy od kierunku
         eta_ratio = (1.0 / obj.ior) if front_face else (obj.ior / 1.0)
         refracted_dir = refract(unit_dir, normal, eta_ratio)
 
@@ -246,6 +251,7 @@ class MyRayTracer2(RayTracer):
             refracted_ray = Ray(cross_point + refracted_dir * EPSILON, refracted_dir)
             refracted_color = self._get_pixel_color(refracted_ray, depth - 1)
 
+        # waga zalamania zalezy od przezroczystosci, reszta idzie na lokalny i odbity
         base_local = 0.4
         base_reflect = 0.3
         base_refract = 0.3

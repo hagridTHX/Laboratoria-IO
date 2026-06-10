@@ -196,6 +196,7 @@ class RayTracer:
         return (closest, min_distance, min_cross_point)
 
 
+# dorzucam dwie kolejne sfery i odsuwam kamere zeby wszystkie sie zmiescily
 scene = Scene(
     objects=[
         Sphere(position=np.array([0, 0, 0]), radius=1.5),
